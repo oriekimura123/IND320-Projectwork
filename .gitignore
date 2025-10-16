@@ -1,0 +1,10 @@
+# .gitignore (Bør ligge i rotmappen)
+
+# Python systemfiler
+__pycache__/
+
+# Jupyter Notebook sjekkpunkter
+.ipynb_checkpoints/
+
+# Streamlit hemmeligheter
+.streamlit/secrets.toml
