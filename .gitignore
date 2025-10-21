@@ -1,4 +1,4 @@
-# .gitignore (Bør ligge i rotmappen)
+# .gitignore
 
 # Python systemfiler
 __pycache__/
@@ -8,3 +8,6 @@ __pycache__/
 
 # Streamlit hemmeligheter
 .streamlit/secrets.toml
+
+# secrets_local
+secrets_local/

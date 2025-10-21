@@ -1,4 +1,5 @@
 # /core/path_utils.py
+# Utility functions for handling project paths
 
 import os
 import sys
