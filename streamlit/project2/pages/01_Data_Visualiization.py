@@ -11,7 +11,7 @@ st.title("Data Visualization")
 st.write("A table showing the imported data (open-meteo-subset.csv).   \n "\
          "Use the row-wise LineChartColumn() to display the first month of the data series.  \n "\
          "There should be one row in the table for each column of the imported data.")
-
+st.write("Uploaded, Oct 16, 2025")
 
 # Create a subset of the DataFrame for January and display it
 january_data = df[df['time'].dt.month == 1]

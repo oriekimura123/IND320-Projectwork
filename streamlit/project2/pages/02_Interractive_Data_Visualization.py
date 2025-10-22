@@ -21,6 +21,7 @@ st.title("Interactive Data Visualization")
 st.write("A plot of the imported data (open-meteo-subset.csv), including header, axis titles and other relevant formatting.   \n"\
          "A drop-down menu (st.selectbox) choosing any single column in the CSV or all columns together.  \n "\
          "A selection slider (st.select_slider) to select a subset of the months. Defaults should be the first month.")
+st.write("Uploaded, Oct 16, 2025")
 
 st.divider()
 
