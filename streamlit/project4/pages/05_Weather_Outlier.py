@@ -40,7 +40,26 @@ if not st.session_state.filtering_confirmed:
     st.error("Please configure the Area and type of data on the Home page first.")
     st.stop()
 
-# Ensure datetime index
+# Date range UI
+st.subheader(f"Weather Data Outlier : area : {st.session_state.selected_area}")
+
+# Select data period
+date_range = st.slider("Select Date Range", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="weather_date_range")
+
+start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
+start_ts = pd.to_datetime(start_date)
+end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+
+# draw_analysis_context
+st.sidebar.header("Current Selection")
+area = st.session_state.get("selected_area", "N/A")
+data_type = st.session_state.get("selected_energy_datatype", "N/A")
+st.sidebar.info(f"**{area}, {data_type}**")
+
+# Sidebar context
+st.sidebar.info(f"**Weather date range:**  \n {start_date.date()} - {end_date.date()}")
+
+# ensure datetime index
 if "time" in df_weather.columns:
     df_weather["time"] = pd.to_datetime(df_weather["time"]).dt.tz_localize(None)
     df_weather.set_index("time", inplace=True)
@@ -50,18 +69,6 @@ else:
 # Filter area
 df_weather = df_weather[df_weather["pricearea"] == st.session_state.selected_area].copy()
 
-# draw_analysis_context
-st.sidebar.header("Current Selection")
-area = st.session_state.get("selected_area", "N/A")
-data_type = st.session_state.get("selected_energy_datatype", "N/A")
-st.sidebar.info(f"**{area}, {data_type}**")
-
-start_date, end_date = st.session_state.date_range_3
-start_ts = pd.to_datetime(start_date)
-end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
-
-# Sidebar context
-st.sidebar.info(f"**Weather data period:**  \n {start_date} - {end_date}")
 
 # Filtered data
 df_time_filtered = df_weather[(df_weather.index >= start_ts) & (df_weather.index <= end_ts)]
@@ -73,7 +80,7 @@ if df_time_filtered.empty:
 
 chart_columns = [c for c in df_time_filtered.columns if c != "pricearea" and c != "time"]
 
-st.subheader(f"Weather Data Outlier : area : {st.session_state.selected_area}")
+
 tab1, tab2 = st.tabs(["Outlier/SPC analysis", "Anomaly/LOF analysis"])
 
 with tab1:

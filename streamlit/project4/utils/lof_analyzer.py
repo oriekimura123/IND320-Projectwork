@@ -7,7 +7,6 @@
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
-# import matplotlib.pyplot as plt
 import plotly.express as px
 from plotly.graph_objects import Figure
 from typing import Tuple

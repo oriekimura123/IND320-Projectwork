@@ -2,7 +2,6 @@
 # Function to perform spectrogram_decomposition and returen figure
 
 import numpy as np
-# import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd

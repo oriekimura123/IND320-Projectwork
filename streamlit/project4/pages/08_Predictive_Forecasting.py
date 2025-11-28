@@ -51,7 +51,6 @@ def adjust_end_train_date(end_train: pd.Timestamp, freq: str) -> pd.Timestamp:
 
     return end_train
 
-
 # Load data (assume these functions are cached)
 df_weather = load_all_era5_data(COORDS_DF)
 df_prod = load_mongoDB(MONGO_COLLECTION_PRODUCTION, MONGO_DATABASE)
@@ -61,6 +60,18 @@ df_cons = load_mongoDB(MONGO_COLLECTION_CONSUMPTION, MONGO_DATABASE)
 if not st.session_state.filtering_confirmed:
     st.error("Please configure the Area and type of data on the Home page first.")
     st.stop()
+
+st.subheader(f"SARIMAX Model for energy data — area {st.session_state.selected_area}")
+
+date_range = st.slider("Select data period", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="sarimax_date_range")
+start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
+end_date = end_date + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+
+# draw_analysis_context
+st.sidebar.header("Current Selection")
+area = st.session_state.get("selected_area", "N/A")
+data_type = st.session_state.get("selected_energy_datatype", "N/A")
+st.sidebar.info(f"**{area}**")
 
 # ensure datetime index
 if "time" in df_weather.columns:
@@ -86,12 +97,6 @@ df_weather = df_weather[df_weather["pricearea"] == st.session_state.selected_are
 df_prod = df_prod[df_prod["pricearea"] == st.session_state.selected_area].copy()
 df_cons = df_cons[df_cons["pricearea"] == st.session_state.selected_area].copy()
 
-# draw_analysis_context
-st.sidebar.header("Current Selection")
-area = st.session_state.get("selected_area", "N/A")
-data_type = st.session_state.get("selected_energy_datatype", "N/A")
-st.sidebar.info(f"**{area}**")
-
 # pivot
 prod_wide = df_prod.pivot_table(index="time", columns=["datatype", "groupname"], values="quantitykwh")
 cons_wide = df_cons.pivot_table(index="time", columns=["datatype", "groupname"], values="quantitykwh")
@@ -107,12 +112,6 @@ else:
 # flatten multiindex columns to strings for simpler selection & SARIMAX
 if isinstance(df_all.columns, pd.MultiIndex):
     df_all.columns = ["_".join(map(str, c)) for c in df_all.columns if c != 'pricearea']
-
-st.subheader(f"SARIMAX Model for energy data — area {st.session_state.selected_area}")
-
-date_range = st.slider("Select data period", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="sarimax_date_range")
-start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
-end_date = end_date + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
 
 df_all = df_all.sort_index()
 df_filtered = df_all.loc[start_date:end_date].copy()

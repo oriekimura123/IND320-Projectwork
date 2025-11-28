@@ -61,27 +61,25 @@ df_energy = df_energy[df_energy["pricearea"] == st.session_state.selected_area].
 # page start
 st.subheader(f"Correlation_Weather_Energy in area {st.session_state.selected_area}")
 
+# Date range UI
+date_range = st.slider("Select data period", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="sarimax_date_range")
+
+start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
+end_date = end_date + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+start_ts = pd.to_datetime(start_date)
+end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+
 # draw_analysis_context
 st.sidebar.header("Current Selection")
 area = st.session_state.get("selected_area", "N/A")
 data_type = st.session_state.get("selected_energy_datatype", "N/A")
-st.sidebar.info(f"**{area}, {data_type}**")
+st.sidebar.info(f"**{area}**")
+
+# Sidebar context
+st.sidebar.info(f"**Correlation Analysis:**   {start_date.date()} - {end_date.date()}")
 
 energy_groups = df_energy["groupname"].unique().tolist()
 weather_columns = [c for c in df_weather.columns if c != "pricearea" and c != "time"]
-
-# Date range UI
-default_range = [pd.to_datetime(MIN_DATE).date(), pd.to_datetime(MAX_DATE).date()]
-new_dates = st.slider("Select data period", min_value=MIN_DATE, max_value=MAX_DATE, value=default_range, format="YYYY-MM-DD", key="corr_date_range")
-if len(new_dates) == 2 and new_dates != default_range:
-    st.session_state.date_range_1_2 = new_dates
-
-start_date, end_date = new_dates
-start_ts = pd.to_datetime(start_date)
-end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
-
-# Sidebar context
-st.sidebar.info(f"**Correlation Analysis:**   {start_date} - {end_date}")
 
 # Filter data by start and end date
 df_weather_time_filtered = df_weather[(df_weather.index >= start_ts) & (df_weather.index <= end_ts)]

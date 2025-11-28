@@ -39,26 +39,13 @@ if not st.session_state.filtering_confirmed:
     st.error("Please configure the Area and type of data on the Home page first.")
     st.stop()
 
-# ensure datetime index
-if "time" in df_weather.columns:
-    df_weather["time"] = pd.to_datetime(df_weather["time"]).dt.tz_localize(None)
-    df_weather.set_index("time", inplace=True)
-else:
-    df_weather.index = pd.to_datetime(df_weather.index).tz_localize(None)
-
-# Filter area
-df_weather = df_weather[df_weather["pricearea"] == st.session_state.selected_area].copy()
-
 # Date range UI
 st.subheader(f"Weather data exploration area {st.session_state.selected_area}")
-current_range = st.session_state.date_range_3
 
 # Select data period
-new_dates = st.slider("Select new data period", min_value=MIN_DATE, max_value=MAX_DATE, value=current_range, format="YYYY-MM-DD", key="weather_date_range")
-if len(new_dates) == 2 and new_dates != current_range:
-    st.session_state.date_range_3 = new_dates
+date_range = st.slider("Select Date Range", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="weather_date_range")
 
-start_date, end_date = st.session_state.date_range_3
+start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
 start_ts = pd.to_datetime(start_date)
 end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
 
@@ -69,7 +56,17 @@ data_type = st.session_state.get("selected_energy_datatype", "N/A")
 st.sidebar.info(f"**{area}**")
 
 # Sidebar context
-st.sidebar.info(f"**Weather data period:**   {start_date} - {end_date}")
+st.sidebar.info(f"**Weather date range:**  \n {start_date.date()} - {end_date.date()}")
+
+# ensure datetime index
+if "time" in df_weather.columns:
+    df_weather["time"] = pd.to_datetime(df_weather["time"]).dt.tz_localize(None)
+    df_weather.set_index("time", inplace=True)
+else:
+    df_weather.index = pd.to_datetime(df_weather.index).tz_localize(None)
+
+# Filter area
+df_weather = df_weather[df_weather["pricearea"] == st.session_state.selected_area].copy()
 
 # Filter data by start and end date
 df_time_filtered = df_weather[(df_weather.index >= start_ts) & (df_weather.index <= end_ts)]
@@ -101,10 +98,10 @@ if selected_column == "All Columns":
             df_normalized[col] = min_max_normalize(df_normalized[col])
     # df_normalized = df_normalized.reset_index(names=["time"])
     df_long = df_normalized.melt(id_vars="time", value_vars=chart_columns, var_name="Metric", value_name="Normalized Value")
-    fig = px.line(df_long, x="time", y="Normalized Value", color="Metric", title=f"All Metrics (Normalized) - {start_date} to {end_date}", labels={"Normalized Value": "Normalized Value (0 to 1)", "time": "Date"})
+    fig = px.line(df_long, x="time", y="Normalized Value", color="Metric", title=f"All Metrics (Normalized) - {start_date.date()} to {end_date.date()}", labels={"Normalized Value": "Normalized Value (0 to 1)", "time": "Date"})
     st.caption("All metrics have been scaled (0 to 1) to allow comparison of relative trends.")
 else:
-    fig = px.line(display_data_weather.reset_index(), x="time", y=selected_column, title=f"Observation for {selected_column} - {start_date} to {end_date}", labels={selected_column: selected_column, "time": "Date"})
+    fig = px.line(display_data_weather.reset_index(), x="time", y=selected_column, title=f"Observation for {selected_column} - {start_date.date()} to {end_date.date()}", labels={selected_column: selected_column, "time": "Date"})
 
 fig.update_layout(xaxis_title="Date", hovermode="x unified", title=dict(font=dict(size=24)), margin=dict(l=20, r=20, t=60, b=20))
 st.plotly_chart(fig, use_container_width=True)

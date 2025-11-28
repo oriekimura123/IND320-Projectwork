@@ -91,24 +91,25 @@ def run_SARIMAX_model(
     pred_dyn_ci = pred_dyn.conf_int()
     pred_dyn_mean = pred_dyn.predicted_mean
 
-    # --- APPLY NON-NEGATIVITY FOR ONE-STEP OUTPUTS ---
-    pred_mean = pred_mean.clip(lower=0)
-    pred_ci[pred_ci.columns[0]] = pred_ci[pred_ci.columns[0]].clip(lower=0)
+    if target != "temperature_2m":
+        # --- APPLY NON-NEGATIVITY FOR ONE-STEP OUTPUTS ---
+        pred_mean = pred_mean.clip(lower=0)
+        pred_ci[pred_ci.columns[0]] = pred_ci[pred_ci.columns[0]].clip(lower=0)
 
-    # --- APPLY NON-NEGATIVITY FOR DYNAMIC OUTPUTS ---
-    dyn_lower_col = pred_dyn_ci.columns[0]
-    dyn_upper_col = pred_dyn_ci.columns[1]
+        # --- APPLY NON-NEGATIVITY FOR DYNAMIC OUTPUTS ---
+        dyn_lower_col = pred_dyn_ci.columns[0]
+        dyn_upper_col = pred_dyn_ci.columns[1]
 
-    pred_dyn_mean = pred_dyn_mean.clip(lower=0)
-    pred_dyn_ci[dyn_lower_col] = pred_dyn_ci[dyn_lower_col].clip(lower=0)
-    pred_dyn_ci[dyn_upper_col] = pred_dyn_ci[dyn_upper_col].clip(lower=0)
+        pred_dyn_mean = pred_dyn_mean.clip(lower=0)
+        pred_dyn_ci[dyn_lower_col] = pred_dyn_ci[dyn_lower_col].clip(lower=0)
+        pred_dyn_ci[dyn_upper_col] = pred_dyn_ci[dyn_upper_col].clip(lower=0)
 
-    # Guarantee ordering: lower ≤ mean ≤ upper
-    pred_ci[pred_ci.columns[0]] = np.minimum(pred_ci[pred_ci.columns[0]], pred_mean)
-    pred_ci[pred_ci.columns[1]] = np.maximum(pred_ci[pred_ci.columns[1]], pred_mean)
+        # Guarantee ordering: lower ≤ mean ≤ upper
+        pred_ci[pred_ci.columns[0]] = np.minimum(pred_ci[pred_ci.columns[0]], pred_mean)
+        pred_ci[pred_ci.columns[1]] = np.maximum(pred_ci[pred_ci.columns[1]], pred_mean)
 
-    pred_dyn_ci[dyn_lower_col] = np.minimum(pred_dyn_ci[dyn_lower_col], pred_dyn_mean)
-    pred_dyn_ci[dyn_upper_col] = np.maximum(pred_dyn_ci[dyn_upper_col], pred_dyn_mean)
+        pred_dyn_ci[dyn_lower_col] = np.minimum(pred_dyn_ci[dyn_lower_col], pred_dyn_mean)
+        pred_dyn_ci[dyn_upper_col] = np.maximum(pred_dyn_ci[dyn_upper_col], pred_dyn_mean)
 
     # Filter for plotting window
     df_plot = df.loc[start_ts:]
@@ -161,7 +162,14 @@ def run_SARIMAX_model(
 
     fig.add_trace(go.Scatter(x=pred_dyn_mean_f.index, y=pred_dyn_mean_f, mode="lines", name="Dynamic forecast", line=dict(color="green", width=2, dash="dash")))
 
-    fig.update_layout(title=f"SARIMAX Model — {target} — exog={exog_vars}", height=600, xaxis_title="Date", yaxis_title="Quantity (kWh)")
+    if target == 'temperature_2m': y_label = 'Temperature (°C)'
+    elif target == 'precipitation': y_label = 'Precititation (mm)'
+    elif target == 'wind_speed_10m': y_label = 'Wind_speed_10m (m/s)'
+    elif target == 'wind_gusts_10m': y_label = 'Wind_gusts_10m (m/s)'
+    elif target == 'wind_direction_10m': y_label = 'Wind_direction_10m (m/s)'
+    else: y_label = "Quantity (kWh)"
+
+    fig.update_layout(title=f"SARIMAX Model — {target} — exog={exog_vars}", height=600, xaxis_title="Date", yaxis_title=y_label)
     fig.update_layout(legend=dict(yanchor="bottom", y=0.99, xanchor="auto", x=0.99))
 
     return fig, captured_warnings 

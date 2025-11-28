@@ -191,11 +191,11 @@ with info_col:
         st.write(f"Value: {val}")
         st.session_state.proposed_area = "".join(area_name.split())
 
-    st.subheader("Datatype Selection")
-    st.session_state.proposed_energy_datatype = st.radio(
-        label = "Which type of energy data to analyze?", 
-        options=["Production data", "Consumption data"],
-        index = 0)
+    # st.subheader("Datatype Selection")
+    # st.session_state.proposed_energy_datatype = st.radio(
+    #     label = "Which type of energy data to analyze?", 
+    #     options=["Production data", "Consumption data"],
+    #     index = 0)
 
     # --- 3. Confirmation Button ---
     if st.button("Confirm & Lock Selection", 
@@ -204,7 +204,7 @@ with info_col:
         # Set state locks
         st.session_state.filtering_confirmed = True
         st.session_state.selected_area = st.session_state.proposed_area
-        st.session_state.selected_energy_datatype = st.session_state.proposed_energy_datatype
+        # st.session_state.selected_energy_datatype = st.session_state.proposed_energy_datatype
     
         # Trigger Layer 2 Caching for the selected area
         with st.spinner("Filtering all 3 datasets by area (caching results)..."):

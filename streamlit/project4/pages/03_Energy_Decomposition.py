@@ -38,11 +38,36 @@ if not st.session_state.filtering_confirmed:
     st.error("Please configure the Area and type of data on the Home page first.")
     st.stop()
 
-# Select which df to use
-if st.session_state.selected_energy_datatype == "Production data":
-    df_energy = df_prod.copy()
-else:
-    df_energy = df_cons.copy()
+# Date range UI
+st.subheader(f"Energy Decomposition area {st.session_state.selected_area}")
+
+col1, col2 = st.columns([1, 3])
+with col1:
+    selected_datatype = st.radio(
+        label = "Datatype Selection", 
+        options=["Production data", "Consumption data"],
+        index = 0)
+    # Select which df to use
+    if st.session_state.selected_energy_datatype == "Production data":
+        df_energy = df_prod.copy()
+    else:
+        df_energy = df_cons.copy()
+with col2:
+    # Select data period
+    date_range = st.slider("Select Date Range", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="dec_date_range")
+
+    start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
+    start_ts = pd.to_datetime(start_date)
+    end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+
+# draw_analysis_context
+st.sidebar.header("Current Selection")
+area = st.session_state.get("selected_area", "N/A")
+data_type = st.session_state.get("selected_energy_datatype", "N/A")
+st.sidebar.info(f"**{area}, {data_type}**")
+
+# Sidebar context
+st.sidebar.info(f"**Energy date range:**  \n {start_date.date()} - {end_date.date()}")
 
 # Ensure datetime index
 if "time" in df_energy.columns:
@@ -54,21 +79,15 @@ else:
 # Filter area
 df_energy = df_energy[df_energy["pricearea"] == st.session_state.selected_area].copy()
 
-# Date range UI
-st.subheader(f"Energy Decomposition area {st.session_state.selected_area}")
+# Ensure datetime index
+if "time" in df_energy.columns:
+    df_energy["time"] = pd.to_datetime(df_energy["time"]).dt.tz_localize(None)
+    df_energy.set_index("time", inplace=True)
+else:
+    df_energy.index = pd.to_datetime(df_energy.index).tz_localize(None)
 
-# draw_analysis_context
-st.sidebar.header("Current Selection")
-area = st.session_state.get("selected_area", "N/A")
-data_type = st.session_state.get("selected_energy_datatype", "N/A")
-st.sidebar.info(f"**{area}, {data_type}**")
-
-start_date, end_date = st.session_state.date_range_1_2
-start_ts = pd.to_datetime(start_date)
-end_ts = pd.to_datetime(end_date) + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
-
-# Sidebar context
-st.sidebar.info(f"**Energy data period:**  \n {start_date} - {end_date}")
+# Filter area
+df_energy = df_energy[df_energy["pricearea"] == st.session_state.selected_area].copy()
 
 # Filtered data
 df_time_filtered = df_energy[(df_energy.index >= start_ts) & (df_energy.index <= end_ts)]
