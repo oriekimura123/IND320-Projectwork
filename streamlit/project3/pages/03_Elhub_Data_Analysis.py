@@ -3,7 +3,10 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import plotly.express as px 
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from scipy.signal import stft
 from statsmodels.tsa.seasonal import STL
 from typing import Tuple, Dict, Any
@@ -37,7 +40,7 @@ with tab1:
         period=period,
         robust=False)
 
-    st.pyplot(plot_decompose_elbub)
+    st.plotly_chart(plot_decompose_elbub, use_container_width=True)
 
 with tab2:
     st.subheader("Short-Time Fourier Transform (STFT) Spectrogram")
@@ -52,5 +55,5 @@ with tab2:
         window_overlap = 12*7,
         figsize = (12, 8)) 
 
-    st.pyplot(fig_spectrogram_decomposition)
+    # st.pyplot(fig_spectrogram_decomposition)
 

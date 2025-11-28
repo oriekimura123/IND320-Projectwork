@@ -27,7 +27,7 @@ with tab1:
         column = st.session_state['selected_column'])
 
     # --- Display Results ---
-    st.pyplot(SPC_fig)
+    st.plotly_chart(SPC_fig, use_container_width=True)
     st.dataframe(SPC_anomalies)
 
 with tab2:
