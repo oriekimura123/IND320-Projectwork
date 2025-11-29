@@ -12,8 +12,8 @@ scikit-learn
 Pillow
 plotly
 streamlit
-folium==0.20.0
-streamlit-folium==0.25.3
+folium
+streamlit-folium
 ./streamlit/utils
 ./streamlit/project4/utils
 
