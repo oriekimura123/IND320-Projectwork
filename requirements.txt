@@ -14,7 +14,7 @@ Pillow
 plotly
 folium
 streamlit_folium
-Cluster
 ConnectionException
 
 ./streamlit/utils
+
