@@ -12,9 +12,6 @@ statsmodels
 scikit-learn
 Pillow
 plotly
-folium
-streamlit_folium
+streamlit_folium folium
 ConnectionException
-
 ./streamlit/utils
-
