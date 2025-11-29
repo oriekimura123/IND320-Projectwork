@@ -14,6 +14,6 @@ plotly
 streamlit
 folium==0.20.0
 streamlit-folium==0.25.3
-ConnectionException
 ./streamlit/utils
+./streamlit/project4/utils
 
