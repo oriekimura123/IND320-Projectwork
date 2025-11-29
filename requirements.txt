@@ -1,4 +1,4 @@
-﻿streamlit
+﻿﻿streamlit
 pandas
 matplotlib
 plotly
@@ -12,7 +12,7 @@ statsmodels
 scikit-learn
 Pillow
 plotly
-folium==0.15.1
-streamlit-folium==0.20.0
+folium==0.20.0
+streamlit-folium==0.25.3
 ConnectionException
 ./streamlit/utils
