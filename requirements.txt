@@ -1,5 +1,4 @@
-﻿﻿streamlit
-pandas
+﻿pandas
 matplotlib
 plotly
 numpy
@@ -12,6 +11,7 @@ statsmodels
 scikit-learn
 Pillow
 plotly
+streamlit
 folium==0.20.0
 streamlit-folium==0.25.3
 ConnectionException
