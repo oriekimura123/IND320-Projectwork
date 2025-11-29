@@ -61,7 +61,7 @@ if not st.session_state.filtering_confirmed:
     st.error("Please configure the Area and type of data on the Home page first.")
     st.stop()
 
-st.subheader(f"SARIMAX Model for energy data — area {st.session_state.selected_area}")
+st.subheader(f"SARIMAX Model for energy and weather data — area {st.session_state.selected_area}")
 
 date_range = st.slider("Select data period", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="sarimax_date_range")
 start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
