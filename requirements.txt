@@ -14,5 +14,5 @@ plotly
 streamlit
 folium
 streamlit-folium
-./streamlit/utils
+./streamlit/project4/utils
 
