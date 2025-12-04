@@ -96,8 +96,8 @@ if yearly_df.empty:
 overall_avg_kgm = yearly_df["Qt (kg/m)"].mean()
 overall_avg_tonnes = overall_avg_kgm / 1000
 
-col1, col2 = st.columns(2)
-# col1, col2, col3 = st.columns(3)
+# col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([1, 2, 1])
 with col1:
     st.metric(label="Overall Average Annual Snow Transport ($Q_t$)", value=f"{overall_avg_tonnes:,.1f} tonnes/m", help="Mean Q_t over selected seasons.")
 # with col2:
@@ -112,13 +112,13 @@ yearly_df_disp["$Q_t$ (tonnes/m)"] = yearly_df_disp["Qt (kg/m)"] / 1000
 #     st.dataframe(yearly_df_disp[["season", "$Q_t$ (tonnes/m)", "Control"]], hide_index=True)
 
 # col1, col2 = st.columns(2)
-# with col1:
-    # fig_yearly = go.Figure()
-    # fig_yearly.add_trace(go.Bar(x=yearly_df_disp["season"], y=yearly_df_disp["$Q_t$ (tonnes/m)"], marker_color="royalblue", name="Annual Snow Transport"))
-    # fig_yearly.update_layout(title="Calculated Annual Snow Transport ($Q_t$) per Season", xaxis_title="Season", yaxis_title="$Q_t$ (tonnes/m)", height=400)
-    # st.plotly_chart(fig_yearly, use_container_width=True)
-
 with col2:
+    fig_yearly = go.Figure()
+    fig_yearly.add_trace(go.Bar(x=yearly_df_disp["season"], y=yearly_df_disp["$Q_t$ (tonnes/m)"], marker_color="royalblue", name="Annual Snow Transport"))
+    fig_yearly.update_layout(title="Calculated Annual Snow Transport ($Q_t$) per Season", xaxis_title="Season", yaxis_title="$Q_t$ (tonnes/m)", height=400)
+    st.plotly_chart(fig_yearly, use_container_width=True)
+
+with col3:
     st.markdown("##### Snow Fence Height Requirements")
     fence_types = ["Wyoming", "Slat-and-wire", "Solid"]
     fence_results = []
