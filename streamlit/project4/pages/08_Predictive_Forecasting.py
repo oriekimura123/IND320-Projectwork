@@ -58,7 +58,7 @@ df_cons = load_mongoDB(MONGO_COLLECTION_CONSUMPTION, MONGO_DATABASE)
 
 # Short-circuit if selection not locked
 if not st.session_state.filtering_confirmed:
-    st.error("Please configure the Area and type of data on the Home page first.")
+    st.error("Please configure the Area on the Home page first.")
     st.stop()
 
 st.subheader(f"SARIMAX Model for energy and weather data — area {st.session_state.selected_area}")

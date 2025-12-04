@@ -38,7 +38,7 @@ df_energy = df_prod.copy() if st.session_state.selected_energy_datatype == "Prod
 
 # Short-circuit if selection not locked
 if not st.session_state.filtering_confirmed:
-    st.error("Please configure the Area and type of data on the Home page first.")
+    st.error("Please configure the Area on the Home page first.")
     st.stop()
 
 # ensure datetime index

@@ -36,7 +36,7 @@ df_cons = load_mongoDB(MONGO_COLLECTION_CONSUMPTION, MONGO_DATABASE)
 
 # Short-circuit if selection not locked
 if not st.session_state.filtering_confirmed:
-    st.error("Please configure the Area and type of data on the Home page first.")
+    st.error("Please configure the Area on the Home page first.")
     st.stop()
 
 # Date range UI
@@ -49,10 +49,8 @@ with col1:
         options=["Production data", "Consumption data"],
         index = 0)
     # Select which df to use
-    if selected_datatype == "Production data":
-        df_energy = df_prod.copy()
-    else:
-        df_energy = df_cons.copy()
+    if selected_datatype == "Production data" : df_energy = df_prod.copy()
+    if selected_datatype == "Consumption data" : df_energy = df_cons.copy()
 with col2:
     # Select data period
     date_range = st.slider("Select Date Range", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="viz_date_range")

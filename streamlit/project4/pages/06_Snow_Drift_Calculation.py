@@ -37,7 +37,7 @@ df_weather = load_all_era5_data(COORDS_DF)
 
 # Short-circuit if selection not locked
 if not st.session_state.filtering_confirmed:
-    st.error("Please configure the Area and type of data on the Home page first.")
+    st.error("Please configure the Area on the Home page first.")
     st.stop()
 
 # ensure datetime index
