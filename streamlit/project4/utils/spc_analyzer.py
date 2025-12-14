@@ -9,8 +9,10 @@ import pandas as pd
 
 @st.cache_data()
 def calculate_SPC_anomalies(
-      df: pd.DataFrame, 
-      column: str
+    df: pd.DataFrame, 
+    column: str,
+    window: int = 168,  # Default window size in hours
+    sigma: float = 3.0  # Default sigma multiplier
 ) -> tuple[go.Figure, pd.DataFrame, str]:
     """
     Performs SPC on a time series DataFrame.
@@ -25,11 +27,20 @@ def calculate_SPC_anomalies(
     df = df.copy()
 
     # --- SPC part (mean ± 3σ) ---
-    mean_val = df[column].mean()
-    std_val = df[column].std()
-    df['UCL'] = mean_val + 3 * std_val
-    df['LCL'] = mean_val - 3 * std_val
-    df['SPC_Anomaly'] = (df[column] > df['UCL']) | (df[column] < df['LCL'])
+    # mean_val = df[column].mean()
+    # std_val = df[column].std()
+    # df['UCL'] = mean_val + 3 * std_val
+    # df['LCL'] = mean_val - 3 * std_val
+
+    rolling_mean = df[column].rolling(window=window, min_periods=window).mean()
+    rolling_std = df[column].rolling(window=window, min_periods=window).std()
+    df['UCL'] = rolling_mean + sigma * rolling_std
+    df['LCL'] = rolling_mean - sigma * rolling_std
+    
+#    df['SPC_Anomaly'] = (df[column] > df['UCL']) | (df[column] < df['LCL'])
+    df['SPC_Anomaly'] = (
+        (df[column] > df['UCL']) | (df[column] < df['LCL'])
+    ) & df['UCL'].notna()
 
     # Extract anomaly points for separate plotting (where SPC_Anomaly is True)
     anomalies = df[df['SPC_Anomaly'] == True]

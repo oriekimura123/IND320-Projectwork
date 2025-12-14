@@ -84,8 +84,16 @@ chart_columns = [c for c in df_time_filtered.columns if c != "pricearea" and c !
 tab1, tab2 = st.tabs(["Outlier/SPC analysis", "Anomaly/LOF analysis"])
 
 with tab1:
-    feature_to_analyze_SPC = st.selectbox("Type of data", options=chart_columns, index=0, key="spc_feature", width=200)
-    SPC_fig, SPC_anomalies = calculate_SPC_anomalies(df_time_filtered, column=feature_to_analyze_SPC)
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col1:
+        feature_to_analyze_SPC = st.selectbox("Type of data", options=chart_columns, index=0, key="spc_feature", width=200)
+    with col2:
+        # Default window value
+        window = st.slider("SPC window (hours)", 24, 720, 168)
+    with col3:
+        # Default sigma value
+        sigma = st.slider("Sigma multiplier", 1.0, 4.0, 3.0)
+    SPC_fig, SPC_anomalies = calculate_SPC_anomalies(df_time_filtered, column=feature_to_analyze_SPC, window=window, sigma=sigma)
     st.plotly_chart(SPC_fig, use_container_width=True)
     st.dataframe(SPC_anomalies)
 
@@ -96,7 +104,7 @@ with tab2:
     with col2:
         neighbors = st.slider("Neighbors", min_value=1, value=20, max_value=50, step=1)
     with col3:
-        contamination = float(st.slider("Contamination", min_value=0.0, value=0.01, max_value=0.2, step=0.01))
+        contamination = float(st.slider("Contamination", min_value=0.01, value=0.01, max_value=0.2, step=0.01))
 
     LOF_fig, LOF_summary, LOF_stats = analyze_LOF_anomalies(df_time_filtered, feature_col=feature_to_analyze_LOF, n_neighbors=int(neighbors), contamination=contamination)
     st.plotly_chart(LOF_fig, use_container_width=True)
