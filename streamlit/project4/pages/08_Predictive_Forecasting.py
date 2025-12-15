@@ -126,7 +126,7 @@ with col2:
 
 with col3:
     # selected_exog = st.multiselect("Exogenous Variables (optional)", options=possible_exog, default=[])
-    default_exog = ['temperature_2m', 'precipitation']
+    default_exog = ['temperature_2m']
     
     exog_vars = st.multiselect(
     "Exogenous variables (max 3)",
