@@ -189,4 +189,4 @@ if run_model:
             for w in unique_warnings:
                 st.markdown(f"- {w}")
 
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig)
