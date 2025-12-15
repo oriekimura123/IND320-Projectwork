@@ -126,13 +126,13 @@ with col2:
 
 with col3:
     # selected_exog = st.multiselect("Exogenous Variables (optional)", options=possible_exog, default=[])
-    #     default_exog = ['temperature_2m']
+    default_exog = ['temperature_2m', 'precipitation']
     
     exog_vars = st.multiselect(
-    "Exogenous variables (max 3)",
-    exog_candidates,
-    max_selections=3
-#    default=default_exog if all(var in exog_candidates for var in default_exog) else []
+        "Exogenous variables (max 3)",
+        exog_candidates,
+        max_selections=3,
+        default=default_exog if all(var in exog_candidates for var in default_exog) else []
     )
 
 st.markdown("##### Model structure, Training & execution")
@@ -142,15 +142,16 @@ with col1:
 with col2:
     d = st.selectbox("Diff (d)", [0,1], index=0)
 with col3:
-    q = st.selectbox("MA (q)", [0,1,2], index=1)
+    q = st.selectbox("MA (q)", [0,1,2], index=0)
 with col4:
-    P = st.selectbox("Seasonal AR (P)", [0,1], index=1)
+    P = st.selectbox("Seasonal AR (P)", [0,1], index=0)
 with col5:
     D = st.selectbox("Seasonal Diff (D)", [0,1], index=1)
 with col6:
     Q = st.selectbox("Seasonal MA (Q)", [0,1], index=1)
 with col7:
-    freq = st.selectbox("Aggregation frequency", ["Hourly","Daily","Weekly","Monthly"])
+    default_freq = 1  # Default to "Daily"
+    freq = st.selectbox("Aggregation frequency", ["Hourly","Daily","Weekly","Monthly"], index=default_freq)
 
     season_map = {"Hourly":24, "Daily":7, "Weekly":52, "Monthly":12}
     seasonal_order = (P, D, Q, season_map[freq])
@@ -159,7 +160,7 @@ with col8:
     train_end = st.date_input(
         "End of training period",
         # value=df_filtered.index[int(len(df_filtered)*0.7)],
-        value=dt.date(2023, 12, 31),
+        value=dt.date(2024, 1, 1),
         width = 150
     )
 

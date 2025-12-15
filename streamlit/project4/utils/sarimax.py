@@ -8,7 +8,6 @@ import warnings
 from typing import List, Tuple
 import streamlit as st
 
-@st.cache_data(show_spinner=True)
 def run_SARIMAX_model(
     df: pd.DataFrame,
     target: str,
@@ -24,14 +23,6 @@ def run_SARIMAX_model(
 
     # ---- Ensure datetime index ----
     df.index = pd.to_datetime(df.index).tz_localize(None)
-
-    # ---- Resampling strategy ----
-    # agg_map = {}
-    # for col in df.columns:
-    #     if any(k in col for k in ["temperature", "wind"]):
-    #         agg_map[col] = "mean"
-    #     else:
-    #         agg_map[col] = "sum"
 
     numeric_cols = df.select_dtypes(include=[np.number]).columns
 
