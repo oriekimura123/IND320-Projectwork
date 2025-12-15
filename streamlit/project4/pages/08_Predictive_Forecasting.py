@@ -126,13 +126,13 @@ with col2:
 
 with col3:
     # selected_exog = st.multiselect("Exogenous Variables (optional)", options=possible_exog, default=[])
-    default_exog = ['temperature_2m']
+#     default_exog = ['temperature_2m']
     
     exog_vars = st.multiselect(
     "Exogenous variables (max 3)",
     exog_candidates,
-    max_selections=3,
-    default=default_exog if all(var in exog_candidates for var in default_exog) else []
+    max_selections=3
+#    default=default_exog if all(var in exog_candidates for var in default_exog) else []
     )
 
 st.markdown("##### Model structure, Training & execution")
@@ -189,4 +189,4 @@ if run_model:
             for w in unique_warnings:
                 st.markdown(f"- {w}")
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')

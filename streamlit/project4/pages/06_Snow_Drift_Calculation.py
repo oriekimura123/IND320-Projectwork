@@ -116,7 +116,7 @@ with col2:
     fig_yearly = go.Figure()
     fig_yearly.add_trace(go.Bar(x=yearly_df_disp["season"], y=yearly_df_disp["$Q_t$ (tonnes/m)"], marker_color="royalblue", name="Annual Snow Transport"))
     fig_yearly.update_layout(title="Calculated Annual Snow Transport ($Q_t$) per Season", xaxis_title="Season", yaxis_title="$Q_t$ (tonnes/m)", height=400)
-    st.plotly_chart(fig_yearly, use_container_width=True)
+    st.plotly_chart(fig_yearly, width='stretch')
 
 with col3:
     st.markdown("##### Snow Fence Height Requirements")
@@ -135,7 +135,7 @@ with col3:
 st.markdown("##### Average Directional Snow Transport (Wind Rose)")
 avg_sectors = compute_average_sector(df_analysis)
 rose2 = plot_rose2(avg_sectors, overall_avg_kgm)
-st.plotly_chart(rose2, use_container_width=True)
+st.plotly_chart(rose2, width='stretch')
 
 
 

@@ -124,7 +124,7 @@ with tab1:
         robust=False,
     )
 
-    st.plotly_chart(plot_decompose_elbub, use_container_width=True)
+    st.plotly_chart(plot_decompose_elbub, width='stretch')
 
 with tab2:
     st.subheader("Short-Time Fourier Transform (STFT) Spectrogram")

@@ -104,5 +104,5 @@ else:
     fig = px.line(display_data_weather.reset_index(), x="time", y=selected_column, title=f"Observation for {selected_column} - {start_date.date()} to {end_date.date()}", labels={selected_column: selected_column, "time": "Date"})
 
 fig.update_layout(xaxis_title="Date", hovermode="x unified", title=dict(font=dict(size=24)), margin=dict(l=20, r=20, t=60, b=20))
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 

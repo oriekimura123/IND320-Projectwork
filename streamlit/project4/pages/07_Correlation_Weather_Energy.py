@@ -179,7 +179,7 @@ with st.spinner("Generating lagged correlation plot..."):
         center_idx=center_idx,
         variable=feature_to_analyze,
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 st.caption(f"Y-Axis (Target): **{group_to_analyze}** | X-Axis (Lagged): **{feature_to_analyze}** | Total Filtered Data Points (Hours): **{data_len}**")

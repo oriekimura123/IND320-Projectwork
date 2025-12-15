@@ -133,6 +133,6 @@ with col2:
     if not df_plot_pd.empty:
         fig_line = px.line(df_plot_pd, x="time", y="quantitykwh", color="groupname", color_discrete_map=COLOR_MAP, title=title_text, labels={"quantitykwh": "Production (kWh)", "time": "Date"})
         fig_line.update_xaxes(tickformat="%d %b %Y")
-        st.plotly_chart(fig_line, use_container_width=True)
+        st.plotly_chart(fig_line, width='stretch')
     else:
         st.warning(f"No {st.session_state.selected_energy_datatype} data found for {st.session_state.selected_area}.")

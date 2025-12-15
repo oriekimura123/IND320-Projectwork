@@ -92,7 +92,7 @@ with tab1:
         # Default sigma multiple
         sigma_multiple = st.slider("Standard Deviation Multiple", 2.0, 5.0, 3.0, 0.1)
     SPC_fig, SPC_anomalies = satv_anomaly_control(df_time_filtered, feature_to_analyze_SPC, dct_cutoff, sigma_multiple)
-    st.plotly_chart(SPC_fig, use_container_width=True)
+    st.plotly_chart(SPC_fig, width='stretch')
     st.dataframe(SPC_anomalies)
 
 with tab2:
@@ -105,7 +105,7 @@ with tab2:
         contamination = float(st.slider("Contamination", min_value=0.01, value=0.01, max_value=0.2, step=0.01))
 
     LOF_fig, LOF_summary, LOF_stats = analyze_LOF_anomalies(df_time_filtered, feature_col=feature_to_analyze_LOF, n_neighbors=int(neighbors), contamination=contamination)
-    st.plotly_chart(LOF_fig, use_container_width=True)
+    st.plotly_chart(LOF_fig, width='stretch')
     st.write("Statistics:", LOF_stats)
     st.write("Outlier Summary Head:\n", LOF_summary.head())
 
