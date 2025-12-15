@@ -42,7 +42,7 @@ if not st.session_state.filtering_confirmed:
 
 # ensure datetime index
 if "time" in df_weather.columns:
-    df_weather["time"] = pd.to_weather(df_prod["time"]).dt.tz_localize(None)
+    df_weather["time"] = pd.to_datetime(df_weather["time"]).dt.tz_localize(None)
     df_weather.set_index("time", inplace=True)
 else:
     df_prod.index = pd.to_datetime(df_prod.index).tz_localize(None)
@@ -126,7 +126,7 @@ with col2:
 
 with col3:
     # selected_exog = st.multiselect("Exogenous Variables (optional)", options=possible_exog, default=[])
-#     default_exog = ['temperature_2m']
+    #     default_exog = ['temperature_2m']
     
     exog_vars = st.multiselect(
     "Exogenous variables (max 3)",

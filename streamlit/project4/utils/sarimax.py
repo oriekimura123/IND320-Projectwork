@@ -26,13 +26,22 @@ def run_SARIMAX_model(
     df.index = pd.to_datetime(df.index).tz_localize(None)
 
     # ---- Resampling strategy ----
+    # agg_map = {}
+    # for col in df.columns:
+    #     if any(k in col for k in ["temperature", "wind"]):
+    #         agg_map[col] = "mean"
+    #     else:
+    #         agg_map[col] = "sum"
+
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+
     agg_map = {}
-    for col in df.columns:
+    for col in numeric_cols:
         if any(k in col for k in ["temperature", "wind"]):
             agg_map[col] = "mean"
         else:
             agg_map[col] = "sum"
-
+ 
     freq_map = {
         "Hourly": "H",
         "Daily": "D",
@@ -47,8 +56,13 @@ def run_SARIMAX_model(
         "Monthly": 12   # Yearly cycle for Monthly data
     }
 
-    df = df.resample(freq_map[freq]).agg(agg_map)
-
+    # df = df.resample(freq_map[freq]).agg(agg_map)
+    df = df[numeric_cols].resample(freq_map[freq]).agg(agg_map)
+    
+    bad_cols = df.columns[df.dtypes == "object"]
+    if len(bad_cols) > 0:
+        raise ValueError(f"Non-numeric columns after resampling: {bad_cols.tolist()}")
+ 
     s = seasonal_period_map.get(freq)
     if s is None:
         # Fallback/Error handling if an unknown frequency is passed
