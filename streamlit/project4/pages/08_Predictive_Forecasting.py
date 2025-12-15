@@ -91,7 +91,7 @@ st.subheader(f"SARIMAX Model for energy and weather data — area {st.session_st
 
 st.markdown("##### Data selection and variable preparation")
 col1, col2, col3 = st.columns([3, 1, 1])
-default_start = dt.date(2023, 1, 1)
+default_start = dt.date(2024, 1, 1)
 default_end = dt.date(2024, 12, 31)
 with col1:
     date_range = st.slider(
@@ -150,7 +150,7 @@ with col5:
 with col6:
     Q = st.selectbox("Seasonal MA (Q)", [0,1], index=1)
 with col7:
-    default_freq = 1  # Default to "Daily"
+    default_freq = 0  # Default to "Hourly"
     freq = st.selectbox("Aggregation frequency", ["Hourly","Daily","Weekly","Monthly"], index=default_freq)
 
     season_map = {"Hourly":24, "Daily":7, "Weekly":52, "Monthly":12}
@@ -160,7 +160,7 @@ with col8:
     train_end = st.date_input(
         "End of training period",
         # value=df_filtered.index[int(len(df_filtered)*0.7)],
-        value=dt.date(2024, 1, 1),
+        value=dt.date(2024, 7, 1),
         width = 150
     )
 
