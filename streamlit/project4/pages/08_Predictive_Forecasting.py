@@ -3,6 +3,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import date
+import datetime as dt
 from utils.utils import initialize_session_state, draw_analysis_context_sidebar
 from utils.data_loaders import load_mongoDB, load_all_era5_data
 from utils.sarimax import run_SARIMAX_model
@@ -28,28 +29,6 @@ city_data = {
 COORDS_DF = pd.DataFrame(city_data)
 ## Set the 'pricearea' as the index for efficient lookup
 COORDS_DF = COORDS_DF.set_index('pricearea')
-
-def adjust_end_train_date(end_train: pd.Timestamp, freq: str) -> pd.Timestamp:
-    """Align end_train to valid resample period boundaries."""
-    
-    if freq == "Daily":
-        return end_train  # any day is valid
-
-    if freq == "Weekly":
-        # pandas weekly (W) ends on Sunday
-        # If the selected date is not Sunday, go back to previous Sunday
-        weekday = end_train.weekday()  # Monday=0, Sunday=6
-        offset = (weekday - 6) % 7
-        return end_train - pd.Timedelta(days=offset)
-
-    if freq == "Monthly":
-        # end of training must be the last completed month
-        # If user picks inside a month → go to last day of previous month
-        first_of_month = end_train.replace(day=1)
-        last_prev_month = first_of_month - pd.Timedelta(days=1)
-        return last_prev_month
-
-    return end_train
 
 # Load data (assume these functions are cached)
 df_weather = load_all_era5_data(COORDS_DF)
@@ -112,8 +91,16 @@ st.subheader(f"SARIMAX Model for energy and weather data — area {st.session_st
 
 st.markdown("##### Data selection and variable preparation")
 col1, col2, col3 = st.columns([3, 1, 1])
+default_start = dt.date(2023, 1, 1)
+default_end = dt.date(2024, 12, 31)
 with col1:
-    date_range = st.slider("Select data period", min_value=MIN_DATE, max_value=MAX_DATE, value=[MIN_DATE, MAX_DATE], format="YYYY-MM-DD", key="sarimax_date_range")
+    date_range = st.slider(
+        "Select data period", 
+        min_value=MIN_DATE, 
+        max_value=MAX_DATE, 
+        value=[default_start, default_end], 
+        format="YYYY-MM-DD", 
+        key="sarimax_date_range")
     start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
     end_date = end_date + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
 
@@ -131,16 +118,21 @@ with col1:
 
 with col2:
     available_targets = [col for col in df_all.columns if col != 'pricearea']
-    target = st.selectbox("Target Variable (Y)", options=available_targets, index=0)
+    default_target = 'Consumption_cabin'
+    default_target_index = available_targets.index(default_target)
+    target = st.selectbox("Target Variable (Y)", options=available_targets, index=default_target_index)
     # pick columns corresponding to the chosen group
     exog_candidates = [c for c in df_all.columns if c != target and c != 'pricearea']
 
 with col3:
     # selected_exog = st.multiselect("Exogenous Variables (optional)", options=possible_exog, default=[])
+    default_exog = ['temperature_2m', 'precipitation']
+    
     exog_vars = st.multiselect(
     "Exogenous variables (max 3)",
     exog_candidates,
-    max_selections=3
+    max_selections=3,
+    default=default_exog if all(var in exog_candidates for var in default_exog) else []
     )
 
 st.markdown("##### Model structure, Training & execution")
@@ -148,7 +140,7 @@ col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 with col1:
     p = st.selectbox("AR (p)", [0,1,2], index=1)
 with col2:
-    d = st.selectbox("Diff (d)", [0,1], index=1)
+    d = st.selectbox("Diff (d)", [0,1], index=0)
 with col3:
     q = st.selectbox("MA (q)", [0,1,2], index=1)
 with col4:
@@ -166,7 +158,8 @@ with col7:
 with col8:
     train_end = st.date_input(
         "End of training period",
-        value=df_filtered.index[int(len(df_filtered)*0.7)],
+        # value=df_filtered.index[int(len(df_filtered)*0.7)],
+        value=dt.date(2023, 12, 31),
         width = 150
     )
 

@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import date
 from utils.utils import initialize_session_state
 from utils.data_loaders import load_all_era5_data, load_mongoDB
-from utils.spc_analyzer import calculate_SPC_anomalies
+from utils.spc_analyzer import satv_anomaly_control
 from utils.lof_analyzer import analyze_LOF_anomalies
 
 # Constants
@@ -69,7 +69,6 @@ else:
 # Filter area
 df_weather = df_weather[df_weather["pricearea"] == st.session_state.selected_area].copy()
 
-
 # Filtered data
 df_time_filtered = df_weather[(df_weather.index >= start_ts) & (df_weather.index <= end_ts)]
 df_time_filtered = df_time_filtered.sort_values(by='time', ascending=True)
@@ -80,7 +79,6 @@ if df_time_filtered.empty:
 
 chart_columns = [c for c in df_time_filtered.columns if c != "pricearea" and c != "time"]
 
-
 tab1, tab2 = st.tabs(["Outlier/SPC analysis", "Anomaly/LOF analysis"])
 
 with tab1:
@@ -88,12 +86,12 @@ with tab1:
     with col1:
         feature_to_analyze_SPC = st.selectbox("Type of data", options=chart_columns, index=0, key="spc_feature", width=200)
     with col2:
-        # Default window value
-        window = st.slider("SPC window (hours)", 24, 720, 168)
+        # Default DCT cutoff value
+        dct_cutoff = st.slider("DCT Cutoff", 1, 6, 3, 1)
     with col3:
-        # Default sigma value
-        sigma = st.slider("Sigma multiplier", 1.0, 4.0, 3.0)
-    SPC_fig, SPC_anomalies = calculate_SPC_anomalies(df_time_filtered, column=feature_to_analyze_SPC, window=window, sigma=sigma)
+        # Default sigma multiple
+        sigma_multiple = st.slider("Standard Deviation Multiple", 2.0, 5.0, 3.0, 0.1)
+    SPC_fig, SPC_anomalies = satv_anomaly_control(df_time_filtered, feature_to_analyze_SPC, dct_cutoff, sigma_multiple)
     st.plotly_chart(SPC_fig, use_container_width=True)
     st.dataframe(SPC_anomalies)
 
